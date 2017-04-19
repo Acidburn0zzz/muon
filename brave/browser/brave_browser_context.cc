@@ -27,6 +27,7 @@
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/common/guest_view_constants.h"
+#include "components/password_manager/core/browser/password_manager.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_filter.h"
@@ -395,6 +396,8 @@ void BraveBrowserContext::CreateProfilePrefs(
     ProtocolHandlerRegistry::RegisterProfilePrefs(pref_registry_.get());
     HostContentSettingsMap::RegisterProfilePrefs(pref_registry_.get());
     autofill::AutofillManager::RegisterProfilePrefs(pref_registry_.get());
+    password_manager::PasswordManager::RegisterProfilePrefs(
+      pref_registry_.get());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::AtomBrowserClientExtensionsPart::RegisterProfilePrefs(
         pref_registry_.get());

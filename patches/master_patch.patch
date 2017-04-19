@@ -240,6 +240,82 @@ index 55b6d1d98314f0adcdd087b0c64379b453df24e5..00738f0871284e0cea5c358ad8c53e0c
  
    // Called by WebContentsData whenever the discard state of a WebContents
    // changes, so that observers can be informed.
+diff --git a/chrome/browser/password_manager/password_store_factory.cc b/chrome/browser/password_manager/password_store_factory.cc
+index 65020c1482d1979332f48f08fef99edfc6117cda..ca14d2489bc14b52631878d80beeb86a43181a9f 100644
+--- a/chrome/browser/password_manager/password_store_factory.cc
++++ b/chrome/browser/password_manager/password_store_factory.cc
+@@ -84,22 +84,22 @@ PasswordStoreFactory* PasswordStoreFactory::GetInstance() {
+ }
+ 
+ // static
+-void PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged(
+-    Profile* profile) {
+-  scoped_refptr<PasswordStore> password_store =
+-      GetForProfile(profile, ServiceAccessType::EXPLICIT_ACCESS);
+-  if (!password_store)
+-    return;
+-  syncer::SyncService* sync_service =
+-      ProfileSyncServiceFactory::GetInstance()->GetForProfile(profile);
+-  net::URLRequestContextGetter* request_context_getter =
+-      profile->GetRequestContext();
++// void PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged(
++//     Profile* profile) {
++//   scoped_refptr<PasswordStore> password_store =
++//       GetForProfile(profile, ServiceAccessType::EXPLICIT_ACCESS);
++//   if (!password_store)
++//     return;
++//   syncer::SyncService* sync_service =
++//       ProfileSyncServiceFactory::GetInstance()->GetForProfile(profile);
++//   net::URLRequestContextGetter* request_context_getter =
++//       profile->GetRequestContext();
+ 
+-  password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
+-      password_store.get(), sync_service, request_context_getter,
+-      profile->GetPath(), content::BrowserThread::GetTaskRunnerForThread(
+-                              content::BrowserThread::DB));
+-}
++//   password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
++//       password_store.get(), sync_service, request_context_getter,
++//       profile->GetPath(), content::BrowserThread::GetTaskRunnerForThread(
++//                               content::BrowserThread::DB));
++// }
+ 
+ // static
+ void PasswordStoreFactory::TrimOrDeleteAffiliationCache(Profile* profile) {
+@@ -115,7 +115,7 @@ PasswordStoreFactory::PasswordStoreFactory()
+     : RefcountedBrowserContextKeyedServiceFactory(
+           "PasswordStore",
+           BrowserContextDependencyManager::GetInstance()) {
+-  DependsOn(WebDataServiceFactory::GetInstance());
++  // DependsOn(WebDataServiceFactory::GetInstance());
+ }
+ 
+ PasswordStoreFactory::~PasswordStoreFactory() {}
+@@ -260,8 +260,10 @@ PasswordStoreFactory::BuildServiceInstanceFor(
+   NOTIMPLEMENTED();
+ #endif
+   DCHECK(ps);
++  base::Callback<void(syncer::ModelType)> fake_flare;
+   if (!ps->Init(
+-          sync_start_util::GetFlareForSyncableService(profile->GetPath()))) {
++          // sync_start_util::GetFlareForSyncableService(profile->GetPath()))) {
++          fake_flare)) {
+     // TODO(crbug.com/479725): Remove the LOG once this error is visible in the
+     // UI.
+     LOG(WARNING) << "Could not initialize password store.";
+diff --git a/chrome/browser/password_manager/password_store_factory.h b/chrome/browser/password_manager/password_store_factory.h
+index 6c0df549de154e877dabe1c8b77ac4fa2a990154..6b527b1d8bec106f7521e1bbf37e08f47d06bb26 100644
+--- a/chrome/browser/password_manager/password_store_factory.h
++++ b/chrome/browser/password_manager/password_store_factory.h
+@@ -44,7 +44,7 @@ class PasswordStoreFactory
+ 
+   // Called by the PasswordDataTypeController whenever there is a possibility
+   // that syncing passwords has just started or ended for |profile|.
+-  static void OnPasswordsSyncedStatePotentiallyChanged(Profile* profile);
++  // static void OnPasswordsSyncedStatePotentiallyChanged(Profile* profile);
+ 
+   // Trims the affiliation cache for |profile| if affiliation-based matching is
+   // enabled, and completely deletes it otherwise.
 diff --git a/chrome/browser/printing/print_view_manager_base.cc b/chrome/browser/printing/print_view_manager_base.cc
 index 33ada8ce7b315e2bd327883bc682e5527ff0696e..b2381424d5ac18e5d09f77e3f4bcb2487311b494 100644
 --- a/chrome/browser/printing/print_view_manager_base.cc
